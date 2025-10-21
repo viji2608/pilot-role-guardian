@@ -1,73 +1,46 @@
-# Welcome to your Lovable project
+# 🛡️ SecurePilot: Role-Based Access with MariaDB + Descope
 
-## Project info
+**Secure dashboards with fine-grained access control, powered by FastAPI, Descope, and MariaDB**
 
-**URL**: https://lovable.dev/projects/2575b560-3958-4b76-b1ba-8f7f22748465
+SecurePilot is a plug-and-play framework for building secure, multi-user dashboards. It combines Descope’s modern authentication (OAuth, magic links, MFA) with MariaDB’s native privilege system to enforce real-time role-based access across the stack.
 
-## How can I edit this code?
+---
 
-There are several ways of editing your application.
+## 🚀 Features
 
-**Use Lovable**
+- 🔐 Secure login with OAuth, magic links, and multi-factor authentication (MFA)
+- 🧑‍💼 Role-based access to dashboards, queries, and data exports
+- 🛠️ Admin panel for managing users and permissions
+- 📜 Audit trail and activity logs for compliance
+- 📈 Scalable architecture for enterprise deployment
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/2575b560-3958-4b76-b1ba-8f7f22748465) and start prompting.
+---
 
-Changes made via Lovable will be committed automatically to this repo.
+## ❗ Problem Statement
 
-**Use your preferred IDE**
+Most open-source dashboards lack robust user management. Without secure authentication and granular access control, sensitive data can be exposed or misused. Developers need a modular solution that integrates identity management with database-level privileges.
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+---
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+## 🎯 Objective
 
-Follow these steps:
+SecurePilot provides a secure dashboard framework that:
+- Authenticates users via Descope
+- Maps user roles to MariaDB privileges
+- Dynamically renders dashboards based on access level
+- Logs all activity for transparency and compliance
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+---
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+## 🛠️ Tech Stack
 
-# Step 3: Install the necessary dependencies.
-npm i
+| Layer        | Technology        |
+|--------------|-------------------|
+| Frontend     | React             |
+| Backend      | FastAPI           |
+| Auth         | Descope SDK       |
+| Database     | MariaDB           |
+| Visualization| Chart.js / D3.js  |
+| Deployment   | Docker + NGINX    |
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
 
-**Edit a file directly in GitHub**
-
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
-
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/2575b560-3958-4b76-b1ba-8f7f22748465) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
