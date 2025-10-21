@@ -1,38 +1,54 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Eye, Edit, Lock, CheckCircle } from "lucide-react";
-import { toast } from "sonner";
+import { InteractiveDashboard } from "./InteractiveDashboard";
+
+type Role = "admin" | "editor" | "viewer";
 
 const roleCards = [
   {
-    role: "Admin",
+    role: "admin" as Role,
+    label: "Admin",
     icon: Lock,
     color: "text-primary",
     bgColor: "bg-primary/10",
+    borderColor: "border-primary",
     permissions: ["Full database access", "Manage users", "View audit logs", "Export data"],
   },
   {
-    role: "Editor",
+    role: "editor" as Role,
+    label: "Editor",
     icon: Edit,
     color: "text-secondary",
     bgColor: "bg-secondary/10",
+    borderColor: "border-secondary",
     permissions: ["Read/Write access", "Edit records", "View reports", "Limited exports"],
   },
   {
-    role: "Viewer",
+    role: "viewer" as Role,
+    label: "Viewer",
     icon: Eye,
     color: "text-accent",
     bgColor: "bg-accent/10",
+    borderColor: "border-accent",
     permissions: ["Read-only access", "View dashboards", "Generate reports", "No exports"],
   },
 ];
 
 export const DemoSection = () => {
-  const handleRoleDemo = (role: string) => {
-    toast.success(`Demo: ${role} role activated`, {
-      description: `Viewing dashboard with ${role.toLowerCase()} permissions`,
-    });
+  const [selectedRole, setSelectedRole] = useState<Role | null>(null);
+
+  const handleRoleSelect = (role: Role) => {
+    setSelectedRole(role);
+    // Smooth scroll to dashboard
+    setTimeout(() => {
+      document.getElementById("interactive-dashboard")?.scrollIntoView({ 
+        behavior: "smooth",
+        block: "nearest"
+      });
+    }, 100);
   };
 
   return (
@@ -53,22 +69,31 @@ export const DemoSection = () => {
           {roleCards.map((item, index) => (
             <Card
               key={index}
-              className="group hover:shadow-glow transition-all duration-300 hover:-translate-y-2 border-border/50 bg-card/80 backdrop-blur"
+              className={`group hover:shadow-glow transition-all duration-300 hover:-translate-y-2 bg-card/80 backdrop-blur ${
+                selectedRole === item.role 
+                  ? `border-2 ${item.borderColor} shadow-card-hover` 
+                  : "border-border/50"
+              }`}
             >
               <CardContent className="p-6 space-y-6">
                 <div className="flex items-center justify-between">
-                  <div className={`p-3 rounded-lg ${item.bgColor}`}>
+                  <div className={`p-3 rounded-lg ${item.bgColor} ${selectedRole === item.role ? 'ring-2 ring-offset-2 ring-offset-background' : ''} ${item.color}`}>
                     <item.icon className={`h-6 w-6 ${item.color}`} />
                   </div>
-                  <Badge variant="outline" className={item.color}>
-                    {item.role}
+                  <Badge 
+                    variant="outline" 
+                    className={`${item.color} ${selectedRole === item.role ? 'font-bold' : ''}`}
+                  >
+                    {item.label}
                   </Badge>
                 </div>
 
                 <div className="space-y-3">
                   {item.permissions.map((permission, idx) => (
                     <div key={idx} className="flex items-start gap-2">
-                      <CheckCircle className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" />
+                      <CheckCircle className={`h-5 w-5 flex-shrink-0 mt-0.5 ${
+                        selectedRole === item.role ? 'text-green-500' : 'text-green-500/50'
+                      }`} />
                       <span className="text-sm text-muted-foreground">{permission}</span>
                     </div>
                   ))}
@@ -76,29 +101,37 @@ export const DemoSection = () => {
 
                 <Button
                   className="w-full"
-                  variant={index === 0 ? "default" : "outline"}
-                  onClick={() => handleRoleDemo(item.role)}
+                  variant={selectedRole === item.role ? "default" : "outline"}
+                  onClick={() => handleRoleSelect(item.role)}
                 >
-                  View as {item.role}
+                  {selectedRole === item.role ? "Active Role" : `View as ${item.label}`}
                 </Button>
               </CardContent>
             </Card>
           ))}
         </div>
 
-        <Card className="bg-card/80 backdrop-blur border-border/50">
-          <CardContent className="p-8">
-            <h3 className="text-2xl font-bold mb-4">Dashboard Preview</h3>
-            <div className="aspect-video bg-muted rounded-lg flex items-center justify-center border border-border">
-              <div className="text-center space-y-4">
-                <Lock className="h-16 w-16 mx-auto text-muted-foreground/50" />
-                <p className="text-muted-foreground">
-                  Select a role above to view the dashboard with specific permissions
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+        <div id="interactive-dashboard">
+          <Card className="bg-card/80 backdrop-blur border-border/50">
+            <CardContent className="p-6 md:p-8">
+              {selectedRole ? (
+                <InteractiveDashboard role={selectedRole} />
+              ) : (
+                <div className="aspect-video rounded-lg flex items-center justify-center border border-border bg-gradient-hero">
+                  <div className="text-center space-y-4 px-4">
+                    <Lock className="h-16 w-16 mx-auto text-muted-foreground/50" />
+                    <p className="text-lg font-medium text-foreground">
+                      Select a role above to start exploring
+                    </p>
+                    <p className="text-muted-foreground max-w-md">
+                      See how Admin, Editor, and Viewer roles have different permissions and capabilities
+                    </p>
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </section>
   );
