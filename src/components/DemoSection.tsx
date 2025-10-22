@@ -4,6 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Eye, Edit, Lock, CheckCircle } from "lucide-react";
 import { InteractiveDashboard } from "./InteractiveDashboard";
+import { useUserRole } from "@/hooks/useUserRole";
 
 type Role = "admin" | "editor" | "viewer";
 
@@ -15,7 +16,7 @@ const roleCards = [
     color: "text-primary",
     bgColor: "bg-primary/10",
     borderColor: "border-primary",
-    permissions: ["Full database access", "Manage users", "View audit logs", "Export data"],
+    permissions: ["Full database access", "Manage users", "Delete any record", "Export all data"],
   },
   {
     role: "editor" as Role,
@@ -24,7 +25,7 @@ const roleCards = [
     color: "text-secondary",
     bgColor: "bg-secondary/10",
     borderColor: "border-secondary",
-    permissions: ["Read/Write access", "Edit records", "View reports", "Limited exports"],
+    permissions: ["Create new items", "Edit all records", "View reports", "Export data"],
   },
   {
     role: "viewer" as Role,
@@ -33,23 +34,26 @@ const roleCards = [
     color: "text-accent",
     bgColor: "bg-accent/10",
     borderColor: "border-accent",
-    permissions: ["Read-only access", "View dashboards", "Generate reports", "No exports"],
+    permissions: ["Read-only access", "View dashboards", "Generate reports", "No modifications"],
   },
 ];
 
 export const DemoSection = () => {
   const [selectedRole, setSelectedRole] = useState<Role | null>(null);
+  const { role: userRole, loading } = useUserRole();
 
   const handleRoleSelect = (role: Role) => {
     setSelectedRole(role);
     // Smooth scroll to dashboard
     setTimeout(() => {
-      document.getElementById("interactive-dashboard")?.scrollIntoView({ 
+      document.getElementById("interactive-dashboard")?.scrollIntoView({
         behavior: "smooth",
         block: "nearest"
       });
     }, 100);
   };
+
+  const displayRole = selectedRole || (userRole as Role) || null;
 
   return (
     <section id="demo" className="py-24 bg-gradient-hero">
@@ -57,11 +61,15 @@ export const DemoSection = () => {
         <div className="text-center space-y-4 mb-16">
           <h2 className="text-4xl md:text-5xl font-bold">
             <span className="bg-gradient-secondary bg-clip-text text-transparent">
-              Interactive Demo
+              Interactive Live Demo
             </span>
           </h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Experience how different roles interact with the dashboard
+            {userRole && !loading ? (
+              <>You're signed in as <span className="font-semibold text-primary">{userRole.toUpperCase()}</span> - Try it live below or preview other roles</>
+            ) : (
+              "Experience real-time role-based access control with live database updates"
+            )}
           </p>
         </div>
 
@@ -69,31 +77,30 @@ export const DemoSection = () => {
           {roleCards.map((item, index) => (
             <Card
               key={index}
-              className={`group hover:shadow-glow transition-all duration-300 hover:-translate-y-2 bg-card/80 backdrop-blur ${
-                selectedRole === item.role 
-                  ? `border-2 ${item.borderColor} shadow-card-hover` 
+              className={`group hover:shadow-glow transition-all duration-300 hover:-translate-y-2 bg-card/80 backdrop-blur ${selectedRole === item.role
+                  ? `border-2 ${item.borderColor} shadow-card-hover`
                   : "border-border/50"
-              }`}
+                }`}
             >
               <CardContent className="p-6 space-y-6">
                 <div className="flex items-center justify-between">
                   <div className={`p-3 rounded-lg ${item.bgColor} ${selectedRole === item.role ? 'ring-2 ring-offset-2 ring-offset-background' : ''} ${item.color}`}>
                     <item.icon className={`h-6 w-6 ${item.color}`} />
                   </div>
-                  <Badge 
-                    variant="outline" 
-                    className={`${item.color} ${selectedRole === item.role ? 'font-bold' : ''}`}
+                  <Badge
+                    variant="outline"
+                    className={`${item.color} ${selectedRole === item.role || userRole === item.role ? 'font-bold' : ''}`}
                   >
                     {item.label}
+                    {userRole === item.role && !selectedRole && " (Your Role)"}
                   </Badge>
                 </div>
 
                 <div className="space-y-3">
                   {item.permissions.map((permission, idx) => (
                     <div key={idx} className="flex items-start gap-2">
-                      <CheckCircle className={`h-5 w-5 flex-shrink-0 mt-0.5 ${
-                        selectedRole === item.role ? 'text-green-500' : 'text-green-500/50'
-                      }`} />
+                      <CheckCircle className={`h-5 w-5 flex-shrink-0 mt-0.5 ${selectedRole === item.role || userRole === item.role ? 'text-green-500' : 'text-green-500/50'
+                        }`} />
                       <span className="text-sm text-muted-foreground">{permission}</span>
                     </div>
                   ))}
@@ -104,7 +111,7 @@ export const DemoSection = () => {
                   variant={selectedRole === item.role ? "default" : "outline"}
                   onClick={() => handleRoleSelect(item.role)}
                 >
-                  {selectedRole === item.role ? "Active Role" : `View as ${item.label}`}
+                  {selectedRole === item.role ? "Active Preview" : `Preview as ${item.label}`}
                 </Button>
               </CardContent>
             </Card>
@@ -114,8 +121,8 @@ export const DemoSection = () => {
         <div id="interactive-dashboard">
           <Card className="bg-card/80 backdrop-blur border-border/50">
             <CardContent className="p-6 md:p-8">
-              {selectedRole ? (
-                <InteractiveDashboard role={selectedRole} />
+              {displayRole ? (
+                <InteractiveDashboard role={displayRole} />
               ) : (
                 <div className="aspect-video rounded-lg flex items-center justify-center border border-border bg-gradient-hero">
                   <div className="text-center space-y-4 px-4">
@@ -124,7 +131,7 @@ export const DemoSection = () => {
                       Select a role above to start exploring
                     </p>
                     <p className="text-muted-foreground max-w-md">
-                      See how Admin, Editor, and Viewer roles have different permissions and capabilities
+                      See how Admin, Editor, and Viewer roles have different permissions with real-time updates
                     </p>
                   </div>
                 </div>
